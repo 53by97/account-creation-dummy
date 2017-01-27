@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" strict="true">
+	<Properties>
+		<Property name="filename">logs/account-creation.log</Property>
+		<Property name="metricsfilename">metricslogs/account-creation.log
+		</Property>
+		<Property name="metricspublishfrequency">5</Property><!--Provide the rate in seconds -->
+		<Property name="enableMetrics">true</Property>
+		<Property name="contextLogging">true</Property>
+	</Properties>
+
+	<Appenders>
+		<Appender type="Console" name="STDOUT">
+			<Layout type="PatternLayout"
+				pattern="Date=%d{yyyy-MM-dd:HH:mm:ss:SSS},  Level=%-5level, %msg%n" />
+			<Filters>
+				<Filter type="MarkerFilter" marker="METRICS" onMatch="DENY"
+					onMismatch="ACCEPT" />
+			</Filters>
+		</Appender>
+		<RollingFile name="Rolling-default" fileName="${filename}"
+			filePattern="logs/${yyyy-MM-dd:HH:mm:ss:SSS}/generic-services-%d{yyyy-MM-dd}-%i.log.gz">
+			<Layout type="PatternLayout"
+				pattern="Date=%d{yyyy-MM-dd:HH:mm:ss:SSS}, Level=%-5level, %msg%n" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="100 MB" />
+			</Policies>
+			<Filters>
+				<Filter type="MarkerFilter" marker="METRICS" onMatch="DENY"
+					onMismatch="ACCEPT" />
+			</Filters>
+		</RollingFile>
+		<RollingFile name="Rolling-metric-default" fileName="${metricsfilename}"
+			filePattern="metricslogs/${yyyy-MM-dd:HH:mm:ss:SSS}/generic-services-metrics-%d{yyyy-MM-dd}-%i.log.gz">
+			<Layout type="PatternLayout"
+				pattern="Date=%d{yyyy-MM-dd:HH:mm:ss:SSS}, Level=%-5level, %msg%n" />
+			<Policies>
+				<SizeBasedTriggeringPolicy size="100 MB" />
+			</Policies>
+			<Filters>
+				<Filter type="MarkerFilter" marker="METRICS" onMatch="ACCEPT"
+					onMismatch="DENY" />
+			</Filters>
+		</RollingFile>
+	</Appenders>
+
+	<Loggers>
+		<Logger name="spire" level="info" additivity="false">
+			<!-- <AppenderRef ref="File" /> <AppenderRef ref="MetricFile" /> -->
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="Rolling-default" />
+			<AppenderRef ref="Rolling-metric-default" />
+		</Logger>
+		<Root level="info">
+			<!-- <AppenderRef ref="File" /> <AppenderRef ref="MetricFile" /> -->
+			<AppenderRef ref="STDOUT" />
+			<AppenderRef ref="Rolling-default" />
+			<AppenderRef ref="Rolling-metric-default" />
+		</Root>
+	</Loggers>
+
+</Configuration>
